@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 /**
  * This enumeration value indicates the type of vertical alignment for a cell, i.e.,
  * whether it is aligned top, bottom, vertically centered, justified or distributed.
- *
  * <!-- FIXME: Identical to {@link org.apache.poi.ss.usermodel.VerticalAlignment}. Should merge these to
  * {@link org.apache.poi.common.usermodel}.VerticalAlignment in the future. -->
  *
@@ -63,7 +62,7 @@ public enum VerticalAlignmentEnum {
      */
     DISTRIBUTED(VerticalAlignment.DISTRIBUTED);
 
-    VerticalAlignment poiVerticalAlignmentEnum;
+    final VerticalAlignment poiVerticalAlignmentEnum;
 
     VerticalAlignmentEnum(VerticalAlignment poiVerticalAlignmentEnum) {
         this.poiVerticalAlignmentEnum = poiVerticalAlignmentEnum;

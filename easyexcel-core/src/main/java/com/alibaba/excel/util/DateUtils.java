@@ -1,12 +1,13 @@
 package com.alibaba.excel.util;
 
+import org.apache.poi.ss.usermodel.DateUtil;
+
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -14,8 +15,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.apache.poi.ss.usermodel.DateUtil;
 
 /**
  * Date utils
@@ -273,7 +272,7 @@ public class DateUtils {
     private static DateFormat getCacheDateFormat(String dateFormat) {
         Map<String, SimpleDateFormat> dateFormatMap = DATE_FORMAT_THREAD_LOCAL.get();
         if (dateFormatMap == null) {
-            dateFormatMap = new HashMap<String, SimpleDateFormat>();
+            dateFormatMap = new HashMap<>();
             DATE_FORMAT_THREAD_LOCAL.set(dateFormatMap);
         } else {
             SimpleDateFormat dateFormatCached = dateFormatMap.get(dateFormat);

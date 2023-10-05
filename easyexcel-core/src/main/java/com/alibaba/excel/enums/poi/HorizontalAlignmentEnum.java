@@ -45,7 +45,6 @@ public enum HorizontalAlignmentEnum {
      * Indicates that the value of the cell should be filled
      * across the entire width of the cell. If blank cells to the right also have the fill alignment,
      * they are also filled with the value, using a convention similar to centerContinuous.
-     *
      * Additional rules:
      * <ol>
      * <li>Only whole values can be appended, not partial values.</li>
@@ -84,7 +83,7 @@ public enum HorizontalAlignmentEnum {
      */
     DISTRIBUTED(HorizontalAlignment.DISTRIBUTED);
 
-    HorizontalAlignment poiHorizontalAlignment;
+    final HorizontalAlignment poiHorizontalAlignment;
 
     HorizontalAlignmentEnum(HorizontalAlignment poiHorizontalAlignment) {
         this.poiHorizontalAlignment = poiHorizontalAlignment;

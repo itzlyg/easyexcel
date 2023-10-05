@@ -1,9 +1,9 @@
 package com.alibaba.excel.analysis.v03;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.alibaba.excel.analysis.v03.handlers.BofRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.BoundSheetRecordHandler;
+import com.alibaba.excel.context.xls.XlsReadContext;
+import com.alibaba.excel.exception.ExcelAnalysisException;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder;
 import org.apache.poi.hssf.eventusermodel.FormatTrackingHSSFListener;
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
@@ -14,10 +14,9 @@ import org.apache.poi.hssf.record.BOFRecord;
 import org.apache.poi.hssf.record.BoundSheetRecord;
 import org.apache.poi.hssf.record.Record;
 
-import com.alibaba.excel.analysis.v03.handlers.BofRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.BoundSheetRecordHandler;
-import com.alibaba.excel.context.xls.XlsReadContext;
-import com.alibaba.excel.exception.ExcelAnalysisException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * In some cases, you need to know the number of sheets in advance and only read the file once in advance.
@@ -26,7 +25,7 @@ import com.alibaba.excel.exception.ExcelAnalysisException;
  */
 public class XlsListSheetListener implements HSSFListener {
     private final XlsReadContext xlsReadContext;
-    private static final Map<Short, XlsRecordHandler> XLS_RECORD_HANDLER_MAP = new HashMap<Short, XlsRecordHandler>();
+    private static final Map<Short, XlsRecordHandler> XLS_RECORD_HANDLER_MAP = new HashMap<>();
 
     static {
         XLS_RECORD_HANDLER_MAP.put(BOFRecord.sid, new BofRecordHandler());

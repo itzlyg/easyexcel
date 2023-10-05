@@ -1,13 +1,5 @@
 package com.alibaba.excel.read.builder;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.xml.parsers.SAXParserFactory;
-
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.cache.ReadCache;
 import com.alibaba.excel.cache.selector.ReadCacheSelector;
@@ -19,6 +11,13 @@ import com.alibaba.excel.event.SyncReadListener;
 import com.alibaba.excel.read.listener.ModelBuildEventListener;
 import com.alibaba.excel.read.metadata.ReadWorkbook;
 import com.alibaba.excel.support.ExcelTypeEnum;
+
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Build ExcelWriter
@@ -162,13 +161,13 @@ public class ExcelReaderBuilder extends AbstractExcelReaderParameterBuilder<Exce
      * <p>
      * Please pass in the name of a class ,like : "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"
      *
-     * @param xlsxSAXParserFactoryName
+     * @param xlsxSaxParserFactoryName
      * @return
      * @see SAXParserFactory#newInstance()
      * @see SAXParserFactory#newInstance(String, ClassLoader)
      */
-    public ExcelReaderBuilder xlsxSAXParserFactoryName(String xlsxSAXParserFactoryName) {
-        readWorkbook.setXlsxSAXParserFactoryName(xlsxSAXParserFactoryName);
+    public ExcelReaderBuilder xlsxSAXParserFactoryName(String xlsxSaxParserFactoryName) {
+        readWorkbook.setXlsxSAXParserFactoryName(xlsxSaxParserFactoryName);
         return this;
     }
 
@@ -180,7 +179,7 @@ public class ExcelReaderBuilder extends AbstractExcelReaderParameterBuilder<Exce
      */
     public ExcelReaderBuilder extraRead(CellExtraTypeEnum extraType) {
         if (readWorkbook.getExtraReadSet() == null) {
-            readWorkbook.setExtraReadSet(new HashSet<CellExtraTypeEnum>());
+            readWorkbook.setExtraReadSet(new HashSet<>());
         }
         readWorkbook.getExtraReadSet().add(extraType);
         return this;

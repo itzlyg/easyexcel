@@ -1,9 +1,9 @@
 package com.alibaba.excel.enums;
 
+import com.alibaba.excel.util.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.alibaba.excel.util.StringUtils;
 
 /**
  * excel internal data type
@@ -46,7 +46,7 @@ public enum CellDataTypeEnum {
     RICH_TEXT_STRING,
     ;
 
-    private static final Map<String, CellDataTypeEnum> TYPE_ROUTING_MAP = new HashMap<String, CellDataTypeEnum>(16);
+    private static final Map<String, CellDataTypeEnum> TYPE_ROUTING_MAP = new HashMap<>(16);
 
     static {
         TYPE_ROUTING_MAP.put("s", STRING);

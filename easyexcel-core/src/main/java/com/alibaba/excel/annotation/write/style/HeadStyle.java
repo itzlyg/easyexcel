@@ -1,21 +1,20 @@
 package com.alibaba.excel.annotation.write.style;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import com.alibaba.excel.enums.BooleanEnum;
 import com.alibaba.excel.enums.poi.BorderStyleEnum;
 import com.alibaba.excel.enums.poi.FillPatternTypeEnum;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.alibaba.excel.enums.poi.VerticalAlignmentEnum;
-
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Custom header styles
@@ -65,8 +64,7 @@ public @interface HeadStyle {
     VerticalAlignmentEnum verticalAlignment() default VerticalAlignmentEnum.DEFAULT;
 
     /**
-     * Set the degree of rotation for the text in the cell.
-     *
+     * Set the degree of rotation for the text in the cell
      * Note: HSSF uses values from -90 to 90 degrees, whereas XSSF uses values from 0 to 180 degrees. The
      * implementations of this method will map between these two value-ranges accordingly, however the corresponding
      * getter is returning values in the range mandated by the current type of Excel file-format that this CellStyle is

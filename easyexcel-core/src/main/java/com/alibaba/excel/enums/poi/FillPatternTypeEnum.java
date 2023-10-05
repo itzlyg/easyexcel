@@ -111,7 +111,7 @@ public enum FillPatternTypeEnum {
      */
     LEAST_DOTS(FillPatternType.LEAST_DOTS);
 
-    FillPatternType poiFillPatternType;
+    final FillPatternType poiFillPatternType;
 
     FillPatternTypeEnum(FillPatternType poiFillPatternType) {
         this.poiFillPatternType = poiFillPatternType;

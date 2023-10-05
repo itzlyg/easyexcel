@@ -1,10 +1,30 @@
 package com.alibaba.excel.analysis.v03;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.alibaba.excel.analysis.ExcelReadExecutor;
+import com.alibaba.excel.analysis.v03.handlers.BlankRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.BofRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.BoolErrRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.BoundSheetRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.DummyRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.EofRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.FormulaRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.HyperlinkRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.IndexRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.LabelRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.LabelSstRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.MergeCellsRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.NoteRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.NumberRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.ObjRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.RkRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.SstRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.StringRecordHandler;
+import com.alibaba.excel.analysis.v03.handlers.TextObjectRecordHandler;
+import com.alibaba.excel.context.xls.XlsReadContext;
+import com.alibaba.excel.exception.ExcelAnalysisException;
+import com.alibaba.excel.exception.ExcelAnalysisStopException;
+import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.excel.read.metadata.holder.xls.XlsReadWorkbookHolder;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder;
 import org.apache.poi.hssf.eventusermodel.FormatTrackingHSSFListener;
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
@@ -33,31 +53,10 @@ import org.apache.poi.hssf.record.TextObjectRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.excel.analysis.ExcelReadExecutor;
-import com.alibaba.excel.analysis.v03.handlers.BlankRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.BofRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.BoolErrRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.BoundSheetRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.DummyRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.EofRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.FormulaRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.HyperlinkRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.IndexRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.LabelRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.LabelSstRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.MergeCellsRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.NoteRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.NumberRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.ObjRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.RkRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.SstRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.StringRecordHandler;
-import com.alibaba.excel.analysis.v03.handlers.TextObjectRecordHandler;
-import com.alibaba.excel.context.xls.XlsReadContext;
-import com.alibaba.excel.exception.ExcelAnalysisException;
-import com.alibaba.excel.exception.ExcelAnalysisStopException;
-import com.alibaba.excel.read.metadata.ReadSheet;
-import com.alibaba.excel.read.metadata.holder.xls.XlsReadWorkbookHolder;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * /** * A text extractor for Excel files. *
@@ -78,7 +77,7 @@ public class XlsSaxAnalyser implements HSSFListener, ExcelReadExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsSaxAnalyser.class);
     private static final short DUMMY_RECORD_SID = -1;
     private final XlsReadContext xlsReadContext;
-    private static final Map<Short, XlsRecordHandler> XLS_RECORD_HANDLER_MAP = new HashMap<Short, XlsRecordHandler>(32);
+    private static final Map<Short, XlsRecordHandler> XLS_RECORD_HANDLER_MAP = new HashMap<>(32);
 
     static {
         XLS_RECORD_HANDLER_MAP.put(BlankRecord.sid, new BlankRecordHandler());

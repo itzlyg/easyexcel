@@ -1,14 +1,7 @@
 package com.alibaba.excel.metadata.csv;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-
 import com.alibaba.excel.enums.NumericCellTypeEnum;
 import com.alibaba.excel.metadata.data.FormulaData;
-
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,6 +16,12 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * csv cell
@@ -224,11 +223,6 @@ public class CsvCell extends CellBase {
 
     @Override
     public CellType getCachedFormulaResultType() {
-        return getCellType();
-    }
-
-    @Override
-    public CellType getCachedFormulaResultTypeEnum() {
         return getCellType();
     }
 

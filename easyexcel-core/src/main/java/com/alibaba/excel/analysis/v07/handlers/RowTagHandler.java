@@ -1,7 +1,5 @@
 package com.alibaba.excel.analysis.v07.handlers;
 
-import java.util.LinkedHashMap;
-
 import com.alibaba.excel.constant.ExcelXmlConstants;
 import com.alibaba.excel.context.xlsx.XlsxReadContext;
 import com.alibaba.excel.enums.CellDataTypeEnum;
@@ -11,9 +9,10 @@ import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
 import com.alibaba.excel.read.metadata.holder.xlsx.XlsxReadSheetHolder;
 import com.alibaba.excel.util.PositionUtils;
-
 import org.apache.commons.collections4.MapUtils;
 import org.xml.sax.Attributes;
+
+import java.util.LinkedHashMap;
 
 /**
  * Cell Handler
@@ -30,10 +29,10 @@ public class RowTagHandler extends AbstractXlsxTagHandler {
         Integer lastRowIndex = xlsxReadContext.readSheetHolder().getRowIndex();
         while (lastRowIndex + 1 < rowIndex) {
             xlsxReadContext.readRowHolder(new ReadRowHolder(lastRowIndex + 1, RowTypeEnum.EMPTY,
-                xlsxReadSheetHolder.getGlobalConfiguration(), new LinkedHashMap<Integer, Cell>()));
+                xlsxReadSheetHolder.getGlobalConfiguration(), new LinkedHashMap<>()));
             xlsxReadContext.analysisEventProcessor().endRow(xlsxReadContext);
             xlsxReadSheetHolder.setColumnIndex(null);
-            xlsxReadSheetHolder.setCellMap(new LinkedHashMap<Integer, Cell>());
+            xlsxReadSheetHolder.setCellMap(new LinkedHashMap<>());
             lastRowIndex++;
         }
         xlsxReadSheetHolder.setRowIndex(rowIndex);

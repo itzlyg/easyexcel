@@ -1,11 +1,5 @@
 package com.alibaba.excel.read.processor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.enums.HeadKindEnum;
@@ -19,11 +13,13 @@ import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
 import com.alibaba.excel.read.metadata.property.ExcelReadHeadProperty;
 import com.alibaba.excel.util.ConverterUtils;
 import com.alibaba.excel.util.StringUtils;
-
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Analysis event
@@ -53,13 +49,13 @@ public class DefaultAnalysisEventProcessor implements AnalysisEventProcessor {
 
     @Override
     public void endSheet(AnalysisContext analysisContext) {
-        for (ReadListener readListener : analysisContext.currentReadHolder().readListenerList()) {
+        for (ReadListener<?> readListener : analysisContext.currentReadHolder().readListenerList()) {
             readListener.doAfterAllAnalysed(analysisContext);
         }
     }
 
     private void dealExtra(AnalysisContext analysisContext) {
-        for (ReadListener readListener : analysisContext.currentReadHolder().readListenerList()) {
+        for (ReadListener<?> readListener : analysisContext.currentReadHolder().readListenerList()) {
             try {
                 readListener.extra(analysisContext.readSheetHolder().getCellExtra(), analysisContext);
             } catch (Exception e) {
@@ -73,7 +69,7 @@ public class DefaultAnalysisEventProcessor implements AnalysisEventProcessor {
     }
 
     private void onException(AnalysisContext analysisContext, Exception e) {
-        for (ReadListener readListenerException : analysisContext.currentReadHolder().readListenerList()) {
+        for (ReadListener<?> readListenerException : analysisContext.currentReadHolder().readListenerList()) {
             try {
                 readListenerException.onException(e, analysisContext);
             } catch (RuntimeException re) {

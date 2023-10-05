@@ -1,8 +1,5 @@
 package com.alibaba.excel.analysis.v03.handlers;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 import com.alibaba.excel.analysis.v03.IgnorableXlsRecordHandler;
 import com.alibaba.excel.constant.BuiltinFormats;
 import com.alibaba.excel.constant.EasyExcelConstants;
@@ -13,12 +10,14 @@ import com.alibaba.excel.metadata.Cell;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.FormulaData;
 import com.alibaba.excel.metadata.data.ReadCellData;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.FormulaRecord;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.ss.usermodel.CellType;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Record handler
@@ -36,7 +35,7 @@ public class FormulaRecordHandler extends AbstractXlsRecordHandler implements Ig
         ReadCellData<?> tempCellData = new ReadCellData<>();
         tempCellData.setRowIndex(frec.getRow());
         tempCellData.setColumnIndex((int)frec.getColumn());
-        CellType cellType = CellType.forInt(frec.getCachedResultType());
+        CellType cellType = frec.getCachedResultTypeEnum();
         String formulaValue = null;
         try {
             formulaValue = HSSFFormulaParser.toFormulaString(xlsReadContext.xlsReadWorkbookHolder().getHssfWorkbook(),

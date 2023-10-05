@@ -17,6 +17,14 @@
  */
 package com.alibaba.excel.metadata.format;
 
+import com.alibaba.excel.util.DateUtils;
+import org.apache.poi.ss.format.CellFormat;
+import org.apache.poi.ss.format.CellFormatResult;
+import org.apache.poi.ss.usermodel.ExcelStyleDateFormatter;
+import org.apache.poi.ss.usermodel.FractionFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormatSymbols;
@@ -34,16 +42,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.alibaba.excel.util.DateUtils;
-
-import org.apache.poi.ss.format.CellFormat;
-import org.apache.poi.ss.format.CellFormatResult;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.ExcelStyleDateFormatter;
-import org.apache.poi.ss.usermodel.FractionFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Written with reference to {@link org.apache.poi.ss.usermodel.DataFormatter}.Made some optimizations for date
  * conversion.
@@ -57,22 +55,22 @@ public class DataFormatter {
      * For logging any problems we find
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DataFormatter.class);
-    private static final String defaultFractionWholePartFormat = "#";
-    private static final String defaultFractionFractionPartFormat = "#/##";
+    private static final String DEFAULT_FRACTION_WHOLE_PART_FORMAT = "#";
+    private static final String DEFAULT_FRACTION_FRACTION_PART_FORMAT = "#/##";
     /**
      * Pattern to find a number format: "0" or "#"
      */
-    private static final Pattern numPattern = Pattern.compile("[0#]+");
+    private static final Pattern NUM_PATTERN = Pattern.compile("[0#]+");
 
     /**
      * Pattern to find days of week as text "ddd...."
      */
-    private static final Pattern daysAsText = Pattern.compile("([d]{3,})", Pattern.CASE_INSENSITIVE);
+    private static final Pattern DAYS_AS_TEXT = Pattern.compile("([d]{3,})", Pattern.CASE_INSENSITIVE);
 
     /**
      * Pattern to find "AM/PM" marker
      */
-    private static final Pattern amPmPattern =
+    private static final Pattern AM_PM_PATTERN =
         Pattern.compile("(([AP])[M/P]*)|(([上下])[午/下]*)", Pattern.CASE_INSENSITIVE);
 
     /**
@@ -104,12 +102,12 @@ public class DataFormatter {
     /**
      * A regex to strip junk out of fraction formats
      */
-    private static final Pattern fractionStripper = Pattern.compile("(\"[^\"]*\")|([^ ?#\\d/]+)");
+    private static final Pattern FRACTION_STRIPPER = Pattern.compile("(\"[^\"]*\")|([^ ?#\\d/]+)");
 
     /**
      * A regex to detect if an alternate grouping character is used in a numeric format
      */
-    private static final Pattern alternateGrouping = Pattern.compile("([#0]([^.#0])[#0]{3})");
+    private static final Pattern ALTERNATE_GROUPING = Pattern.compile("([#0]([^.#0])[#0]{3})");
 
     private static final Pattern E_NOTATION_PATTERN = Pattern.compile("E(\\d)");
 
@@ -128,12 +126,12 @@ public class DataFormatter {
     /**
      * The decimal symbols of the locale used for formatting values.
      */
-    private DecimalFormatSymbols decimalSymbols;
+    private final DecimalFormatSymbols decimalSymbols;
 
     /**
      * The date symbols of the locale used for formatting values.
      */
-    private DateFormatSymbols dateSymbols;
+    private final DateFormatSymbols dateSymbols;
     /**
      * A default format to use when a number pattern cannot be parsed.
      */
@@ -141,12 +139,12 @@ public class DataFormatter {
     /**
      * A map to cache formats. Map<String,Format> formats
      */
-    private final Map<String, Format> formats = new HashMap<String, Format>();
+    private final Map<String, Format> formats = new HashMap<>();
 
     /**
      * stores the locale valid it the last formatting call
      */
-    private Locale locale;
+    private final Locale locale;
     /**
      * true if date uses 1904 windowing, or false if using 1900 date windowing.
      *
@@ -154,13 +152,13 @@ public class DataFormatter {
      *
      * @return
      */
-    private Boolean use1904windowing;
+    private final Boolean use1904windowing;
     /**
      * Whether to use scientific Format.
      *
      * default is false
      */
-    private Boolean useScientificFormat;
+    private final Boolean useScientificFormat;
 
     /**
      * Creates a formatter using the given locale.
@@ -192,9 +190,6 @@ public class DataFormatter {
 
         // Might be better to separate out the n p and z formats, falling back to p when n and z are not set.
         // That however would require other code to be re factored.
-        // String[] formatBits = formatStrIn.split(";");
-        // int i = cellValue > 0.0 ? 0 : cellValue < 0.0 ? 1 : 2;
-        // String formatStr = (i < formatBits.length) ? formatBits[i] : formatBits[0];
         String formatStr = dataFormatString;
 
         // Excel supports 2+ part conditional data formats, eg positive/negative/zero,
@@ -214,7 +209,7 @@ public class DataFormatter {
                 Object cellValueO = data;
                 if (DateUtils.isADateFormat(dataFormat, formatStr) &&
                     // don't try to handle Date value 0, let a 3 or 4-part format take care of it
-                    data.doubleValue() != 0.0) {
+                        data != 0.0) {
                     cellValueO = DateUtils.getJavaDate(data, use1904windowing);
                 }
                 // Wrap and return (non-cachable - CellFormat does that)
@@ -282,7 +277,7 @@ public class DataFormatter {
         }
 
         // Check for special cases
-        if (formatStr == null || formatStr.trim().length() == 0) {
+        if (formatStr.trim().isEmpty()) {
             return getDefaultFormat();
         }
 
@@ -298,25 +293,23 @@ public class DataFormatter {
             String[] chunks = formatStr.split(";");
             for (String chunk1 : chunks) {
                 String chunk = chunk1.replaceAll("\\?", "#");
-                Matcher matcher = fractionStripper.matcher(chunk);
+                Matcher matcher = FRACTION_STRIPPER.matcher(chunk);
                 chunk = matcher.replaceAll(" ");
                 chunk = chunk.replaceAll(" +", " ");
                 Matcher fractionMatcher = fractionPattern.matcher(chunk);
                 // take the first match
                 if (fractionMatcher.find()) {
-                    String wholePart = (fractionMatcher.group(1) == null) ? "" : defaultFractionWholePartFormat;
+                    String wholePart = (fractionMatcher.group(1) == null) ? "" : DEFAULT_FRACTION_WHOLE_PART_FORMAT;
                     return new FractionFormat(wholePart, fractionMatcher.group(3));
                 }
             }
 
             // Strip custom text in quotes and escaped characters for now as it can cause performance problems in
             // fractions.
-            // String strippedFormatStr = formatStr.replaceAll("\\\\ ", " ").replaceAll("\\\\.",
-            // "").replaceAll("\"[^\"]*\"", " ").replaceAll("\\?", "#");
-            return new FractionFormat(defaultFractionWholePartFormat, defaultFractionFractionPartFormat);
+            return new FractionFormat(DEFAULT_FRACTION_WHOLE_PART_FORMAT, DEFAULT_FRACTION_FRACTION_PART_FORMAT);
         }
 
-        if (numPattern.matcher(formatStr).find()) {
+        if (NUM_PATTERN.matcher(formatStr).find()) {
             return createNumberFormat(formatStr);
         }
         return getDefaultFormat();
@@ -342,25 +335,30 @@ public class DataFormatter {
         String formatStr = pFormatStr;
         formatStr = formatStr.replaceAll("\\\\-", "-");
         formatStr = formatStr.replaceAll("\\\\,", ",");
-        formatStr = formatStr.replaceAll("\\\\\\.", "."); // . is a special regexp char
+        // . is a special regexp char
+        formatStr = formatStr.replaceAll("\\\\\\.", ".");
         formatStr = formatStr.replaceAll("\\\\ ", " ");
-        formatStr = formatStr.replaceAll("\\\\/", "/"); // weird: m\\/d\\/yyyy
+        // weird: m\\/d\\/yyyy
+        formatStr = formatStr.replaceAll("\\\\/", "/");
         formatStr = formatStr.replaceAll(";@", "");
-        formatStr = formatStr.replaceAll("\"/\"", "/"); // "/" is escaped for no reason in: mm"/"dd"/"yyyy
-        formatStr = formatStr.replace("\"\"", "'"); // replace Excel quoting with Java style quoting
-        formatStr = formatStr.replaceAll("\\\\T", "'T'"); // Quote the T is iso8601 style dates
+        // "/" is escaped for no reason in: mm"/"dd"/"yyyy
+        formatStr = formatStr.replaceAll("\"/\"", "/");
+        // replace Excel quoting with Java style quoting
+        formatStr = formatStr.replace("\"\"", "'");
+        // Quote the T is iso8601 style dates
+        formatStr = formatStr.replaceAll("\\\\T", "'T'");
         formatStr = formatStr.replace("\"", "");
 
         boolean hasAmPm = false;
-        Matcher amPmMatcher = amPmPattern.matcher(formatStr);
+        Matcher amPmMatcher = AM_PM_PATTERN.matcher(formatStr);
         while (amPmMatcher.find()) {
             formatStr = amPmMatcher.replaceAll("@");
             hasAmPm = true;
-            amPmMatcher = amPmPattern.matcher(formatStr);
+            amPmMatcher = AM_PM_PATTERN.matcher(formatStr);
         }
         formatStr = formatStr.replaceAll("@", "a");
 
-        Matcher dateMatcher = daysAsText.matcher(formatStr);
+        Matcher dateMatcher = DAYS_AS_TEXT.matcher(formatStr);
         if (dateMatcher.find()) {
             String match = dateMatcher.group(0).toUpperCase(Locale.ROOT).replaceAll("D", "E");
             formatStr = dateMatcher.replaceAll(match);
@@ -377,7 +375,7 @@ public class DataFormatter {
         StringBuilder sb = new StringBuilder();
         char[] chars = formatStr.toCharArray();
         boolean mIsMonth = true;
-        List<Integer> ms = new ArrayList<Integer>();
+        List<Integer> ms = new ArrayList<>();
         boolean isElapsed = false;
         for (int j = 0; j < chars.length; j++) {
             char c = chars[j];
@@ -421,7 +419,7 @@ public class DataFormatter {
             } else if (c == 'm' || c == 'M') {
                 if (mIsMonth) {
                     sb.append('M');
-                    ms.add(Integer.valueOf(sb.length() - 1));
+                    ms.add(sb.length() - 1);
                 } else {
                     sb.append('m');
                 }
@@ -511,8 +509,8 @@ public class DataFormatter {
 
     private static class InternalDecimalFormatWithScale extends Format {
 
-        private static final Pattern endsWithCommas = Pattern.compile("(,+)$");
-        private BigDecimal divider;
+        private static final Pattern ENDS_WITH_COMMAS = Pattern.compile("(,+)$");
+        private final BigDecimal divider;
         private static final BigDecimal ONE_THOUSAND = new BigDecimal(1000);
         private final DecimalFormat df;
 
@@ -523,7 +521,7 @@ public class DataFormatter {
         public InternalDecimalFormatWithScale(String pattern, DecimalFormatSymbols symbols) {
             df = new DecimalFormat(trimTrailingCommas(pattern), symbols);
             setExcelStyleRoundingMode(df);
-            Matcher endsWithCommasMatcher = endsWithCommas.matcher(pattern);
+            Matcher endsWithCommasMatcher = ENDS_WITH_COMMAS.matcher(pattern);
             if (endsWithCommasMatcher.find()) {
                 String commas = (endsWithCommasMatcher.group(1));
                 BigDecimal temp = BigDecimal.ONE;
@@ -567,7 +565,7 @@ public class DataFormatter {
 
         // Do we need to change the grouping character?
         // eg for a format like #'##0 which wants 12'345 not 12,345
-        Matcher agm = alternateGrouping.matcher(format);
+        Matcher agm = ALTERNATE_GROUPING.matcher(format);
         if (agm.find()) {
             char grouping = agm.group(2).charAt(0);
             // Only replace the grouping character if it is not the default
@@ -741,7 +739,7 @@ public class DataFormatter {
      */
     @SuppressWarnings("serial")
     private static final class SSNFormat extends Format {
-        private static final DecimalFormat df = createIntegerOnlyFormat("000000000");
+        private static final DecimalFormat DF = createIntegerOnlyFormat("000000000");
 
         private SSNFormat() {
             // enforce singleton
@@ -751,7 +749,7 @@ public class DataFormatter {
          * Format a number as an SSN
          */
         public static String format(Number num) {
-            String result = df.format(num);
+            String result = DF.format(num);
             return result.substring(0, 3) + '-' + result.substring(3, 5) + '-' + result.substring(5, 9);
         }
 
@@ -762,7 +760,7 @@ public class DataFormatter {
 
         @Override
         public Object parseObject(String source, ParsePosition pos) {
-            return df.parseObject(source, pos);
+            return DF.parseObject(source, pos);
         }
     }
 
@@ -773,7 +771,7 @@ public class DataFormatter {
      */
     @SuppressWarnings("serial")
     private static final class ZipPlusFourFormat extends Format {
-        private static final DecimalFormat df = createIntegerOnlyFormat("000000000");
+        private static final DecimalFormat DF = createIntegerOnlyFormat("000000000");
 
         private ZipPlusFourFormat() {
             // enforce singleton
@@ -783,7 +781,7 @@ public class DataFormatter {
          * Format a number as Zip + 4
          */
         public static String format(Number num) {
-            String result = df.format(num);
+            String result = DF.format(num);
             return result.substring(0, 5) + '-' + result.substring(5, 9);
         }
 
@@ -794,7 +792,7 @@ public class DataFormatter {
 
         @Override
         public Object parseObject(String source, ParsePosition pos) {
-            return df.parseObject(source, pos);
+            return DF.parseObject(source, pos);
         }
     }
 
@@ -805,7 +803,7 @@ public class DataFormatter {
      */
     @SuppressWarnings("serial")
     private static final class PhoneFormat extends Format {
-        private static final DecimalFormat df = createIntegerOnlyFormat("##########");
+        private static final DecimalFormat DF = createIntegerOnlyFormat("##########");
 
         private PhoneFormat() {
             // enforce singleton
@@ -815,7 +813,7 @@ public class DataFormatter {
          * Format a number as a phone number
          */
         public static String format(Number num) {
-            String result = df.format(num);
+            String result = DF.format(num);
             StringBuilder sb = new StringBuilder();
             String seg1, seg2, seg3;
             int len = result.length();
@@ -827,10 +825,10 @@ public class DataFormatter {
             seg2 = result.substring(Math.max(0, len - 7), len - 4);
             seg1 = result.substring(Math.max(0, len - 10), Math.max(0, len - 7));
 
-            if (seg1.trim().length() > 0) {
+            if (!seg1.trim().isEmpty()) {
                 sb.append('(').append(seg1).append(") ");
             }
-            if (seg2.trim().length() > 0) {
+            if (!seg2.trim().isEmpty()) {
                 sb.append(seg2).append('-');
             }
             sb.append(seg3);
@@ -844,7 +842,7 @@ public class DataFormatter {
 
         @Override
         public Object parseObject(String source, ParsePosition pos) {
-            return df.parseObject(source, pos);
+            return DF.parseObject(source, pos);
         }
     }
 

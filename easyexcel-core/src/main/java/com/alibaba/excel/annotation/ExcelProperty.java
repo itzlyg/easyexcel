@@ -1,13 +1,13 @@
 package com.alibaba.excel.annotation;
 
+import com.alibaba.excel.converters.AutoConverter;
+import com.alibaba.excel.converters.Converter;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.alibaba.excel.converters.AutoConverter;
-import com.alibaba.excel.converters.Converter;
 
 /**
  * @author jipengfei
@@ -31,9 +31,7 @@ public @interface ExcelProperty {
 
     /**
      * Index of column
-     *
      * Read or write it on the index of column, If it's equal to -1, it's sorted by Java class.
-     *
      * priority: index &gt; order &gt; default sort
      *
      * @return Index of column
@@ -42,7 +40,6 @@ public @interface ExcelProperty {
 
     /**
      * Defines the sort order for an column.
-     *
      * priority: index &gt; order &gt; default sort
      *
      * @return Order of column

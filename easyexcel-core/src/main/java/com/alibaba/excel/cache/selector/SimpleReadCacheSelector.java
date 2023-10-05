@@ -1,8 +1,8 @@
 package com.alibaba.excel.cache.selector;
 
-import java.io.IOException;
-
-import lombok.Data;
+import com.alibaba.excel.cache.Ehcache;
+import com.alibaba.excel.cache.MapCache;
+import com.alibaba.excel.cache.ReadCache;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +10,7 @@ import org.apache.poi.openxml4j.opc.PackagePart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.excel.cache.Ehcache;
-import com.alibaba.excel.cache.MapCache;
-import com.alibaba.excel.cache.ReadCache;
+import java.io.IOException;
 
 /**
  * Simple cache selector
@@ -105,7 +103,7 @@ public class SimpleReadCacheSelector implements ReadCacheSelector {
             if (maxCacheActivateBatchCount == null) {
                 maxCacheActivateBatchCount = DEFAULT_MAX_EHCACHE_ACTIVATE_BATCH_COUNT;
             }
-            return new Ehcache(maxCacheActivateSize, maxCacheActivateBatchCount);
+            return new Ehcache(null, maxCacheActivateBatchCount);
         }
 
     }

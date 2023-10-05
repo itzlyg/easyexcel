@@ -18,5 +18,5 @@ public enum NumericCellTypeEnum {
      * date. Support only when writing.
      */
     DATE,
-    ;
+
 }

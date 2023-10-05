@@ -49,7 +49,7 @@ public class HyperlinkData extends CoordinateData {
          */
         FILE(org.apache.poi.common.usermodel.HyperlinkType.FILE);
 
-        org.apache.poi.common.usermodel.HyperlinkType value;
+        final org.apache.poi.common.usermodel.HyperlinkType value;
 
         HyperlinkType(org.apache.poi.common.usermodel.HyperlinkType value) {
             this.value = value;

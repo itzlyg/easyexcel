@@ -1,14 +1,8 @@
 package com.alibaba.excel.cache;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.FileUtils;
 import com.alibaba.excel.util.ListUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.ehcache.CacheManager;
@@ -18,6 +12,10 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.EntryUnit;
 import org.ehcache.config.units.MemoryUnit;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Default cache

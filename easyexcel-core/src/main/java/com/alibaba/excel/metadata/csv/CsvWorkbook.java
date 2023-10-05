@@ -1,18 +1,13 @@
 package com.alibaba.excel.metadata.csv;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.formula.EvaluationWorkbook;
 import org.apache.poi.ss.formula.udf.UDFFinder;
+import org.apache.poi.ss.usermodel.CellReferenceType;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -23,6 +18,13 @@ import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.SheetVisibility;
 import org.apache.poi.ss.usermodel.Workbook;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * csv workbook
@@ -200,18 +202,13 @@ public class CsvWorkbook implements Workbook {
     }
 
     @Override
-    public short getNumberOfFonts() {
+    public int getNumberOfFonts() {
         return 0;
     }
 
     @Override
     public int getNumberOfFontsAsInt() {
         return 0;
-    }
-
-    @Override
-    public Font getFontAt(short idx) {
-        return null;
     }
 
     @Override
@@ -273,28 +270,8 @@ public class CsvWorkbook implements Workbook {
     }
 
     @Override
-    public Name getNameAt(int nameIndex) {
-        return null;
-    }
-
-    @Override
     public Name createName() {
         return null;
-    }
-
-    @Override
-    public int getNameIndex(String name) {
-        return 0;
-    }
-
-    @Override
-    public void removeName(int index) {
-
-    }
-
-    @Override
-    public void removeName(String name) {
-
     }
 
     @Override
@@ -419,6 +396,21 @@ public class CsvWorkbook implements Workbook {
     @Override
     public int addOlePackage(byte[] oleData, String label, String fileName, String command) throws IOException {
         return 0;
+    }
+
+    @Override
+    public EvaluationWorkbook createEvaluationWorkbook() {
+        return null;
+    }
+
+    @Override
+    public CellReferenceType getCellReferenceType() {
+        return null;
+    }
+
+    @Override
+    public void setCellReferenceType(CellReferenceType cellReferenceType) {
+
     }
 
     @Override

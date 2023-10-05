@@ -1,20 +1,5 @@
 package com.alibaba.excel.analysis.v07;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import com.alibaba.excel.analysis.ExcelReadExecutor;
 import com.alibaba.excel.analysis.v07.handlers.sax.SharedStringsTableHandler;
 import com.alibaba.excel.analysis.v07.handlers.sax.XlsxRowHandler;
@@ -29,9 +14,7 @@ import com.alibaba.excel.util.FileUtils;
 import com.alibaba.excel.util.MapUtils;
 import com.alibaba.excel.util.SheetUtils;
 import com.alibaba.excel.util.StringUtils;
-
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
@@ -41,10 +24,8 @@ import org.apache.poi.openxml4j.opc.PackageRelationshipCollection;
 import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.CommentsTable;
-import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.Comments;
 import org.apache.poi.xssf.usermodel.XSSFComment;
-import org.apache.poi.xssf.usermodel.XSSFRelation;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbook;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbookPr;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.WorkbookDocument;
@@ -52,6 +33,20 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author jipengfei
@@ -79,7 +74,7 @@ public class XlsxSaxAnalyser implements ExcelReadExecutor {
     /**
      * excel comments key: sheetNo value: CommentsTable
      */
-    private final Map<Integer, CommentsTable> commentsTableMap;
+    private final Map<Integer, Comments> commentsTableMap;
 
     public XlsxSaxAnalyser(XlsxReadContext xlsxReadContext, InputStream decryptedStream) throws Exception {
         this.xlsxReadContext = xlsxReadContext;
@@ -121,9 +116,9 @@ public class XlsxSaxAnalyser implements ExcelReadExecutor {
             sheetList.add(new ReadSheet(index, ite.getSheetName()));
             sheetMap.put(index, inputStream);
             if (xlsxReadContext.readWorkbookHolder().getExtraReadSet().contains(CellExtraTypeEnum.COMMENT)) {
-                CommentsTable commentsTable = ite.getSheetComments();
-                if (null != commentsTable) {
-                    commentsTableMap.put(index, commentsTable);
+                Comments comments = ite.getSheetComments();
+                if (null != comments) {
+                    commentsTableMap.put(index, comments);
                 }
             }
             if (xlsxReadContext.readWorkbookHolder().getExtraReadSet().contains(CellExtraTypeEnum.HYPERLINK)) {
@@ -270,14 +265,14 @@ public class XlsxSaxAnalyser implements ExcelReadExecutor {
         if (!xlsxReadContext.readWorkbookHolder().getExtraReadSet().contains(CellExtraTypeEnum.COMMENT)) {
             return;
         }
-        CommentsTable commentsTable = commentsTableMap.get(readSheet.getSheetNo());
-        if (commentsTable == null) {
+        Comments comments = commentsTableMap.get(readSheet.getSheetNo());
+        if (comments == null) {
             return;
         }
-        Iterator<CellAddress> cellAddresses = commentsTable.getCellAddresses();
+        Iterator<CellAddress> cellAddresses = comments.getCellAddresses();
         while (cellAddresses.hasNext()) {
             CellAddress cellAddress = cellAddresses.next();
-            XSSFComment cellComment = commentsTable.findCellComment(cellAddress);
+            XSSFComment cellComment = comments.findCellComment(cellAddress);
             CellExtra cellExtra = new CellExtra(CellExtraTypeEnum.COMMENT, cellComment.getString().toString(),
                 cellAddress.getRow(), cellAddress.getColumn());
             xlsxReadContext.readSheetHolder().setCellExtra(cellExtra);

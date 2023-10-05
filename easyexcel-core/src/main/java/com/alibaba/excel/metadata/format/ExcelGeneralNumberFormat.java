@@ -1,5 +1,7 @@
 package com.alibaba.excel.metadata.format;
 
+import org.apache.poi.ss.usermodel.DataFormatter;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -9,8 +11,6 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.Locale;
-
-import org.apache.poi.ss.usermodel.DataFormatter;
 
 /**
  * Written with reference to {@link org.apache.poi.ss.usermodel.ExcelGeneralNumberFormat }.
@@ -25,13 +25,12 @@ public class ExcelGeneralNumberFormat extends Format {
 
     private static final MathContext TO_10_SF = new MathContext(10, RoundingMode.HALF_UP);
 
-    private final DecimalFormatSymbols decimalSymbols;
     private final DecimalFormat integerFormat;
     private final DecimalFormat decimalFormat;
     private final DecimalFormat scientificFormat;
 
     public ExcelGeneralNumberFormat(final Locale locale, final boolean useScientificFormat) {
-        decimalSymbols = DecimalFormatSymbols.getInstance(locale);
+        DecimalFormatSymbols decimalSymbols = DecimalFormatSymbols.getInstance(locale);
         //  Supported Do not use scientific notation.
         if (useScientificFormat) {
             scientificFormat = new DecimalFormat("0.#####E0", decimalSymbols);

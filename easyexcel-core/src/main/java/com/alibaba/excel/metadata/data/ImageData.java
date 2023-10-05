@@ -53,7 +53,7 @@ public class ImageData extends ClientAnchorData {
 
         ;
 
-        int value;
+        final int value;
 
         ImageType(int value) {
             this.value = value;

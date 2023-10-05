@@ -1,8 +1,5 @@
 package com.alibaba.excel.analysis.v07.handlers.sax;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.excel.analysis.v07.handlers.CellFormulaTagHandler;
 import com.alibaba.excel.analysis.v07.handlers.CellInlineStringValueTagHandler;
 import com.alibaba.excel.analysis.v07.handlers.CellTagHandler;
@@ -14,11 +11,13 @@ import com.alibaba.excel.analysis.v07.handlers.RowTagHandler;
 import com.alibaba.excel.analysis.v07.handlers.XlsxTagHandler;
 import com.alibaba.excel.constant.ExcelXmlConstants;
 import com.alibaba.excel.context.xlsx.XlsxReadContext;
-
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author jipengfei
@@ -91,7 +90,7 @@ public class XlsxRowHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String name) throws SAXException {
+    public void endElement(String uri, String localName, String name) {
         XlsxTagHandler handler = XLSX_CELL_HANDLER_MAP.get(name);
         if (handler == null || !handler.support(xlsxReadContext)) {
             return;

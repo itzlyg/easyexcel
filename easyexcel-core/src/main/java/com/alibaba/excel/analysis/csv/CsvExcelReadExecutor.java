@@ -1,15 +1,5 @@
 package com.alibaba.excel.analysis.csv;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.excel.analysis.ExcelReadExecutor;
 import com.alibaba.excel.context.csv.CsvReadContext;
 import com.alibaba.excel.enums.ByteOrderMarkEnum;
@@ -23,13 +13,22 @@ import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
 import com.alibaba.excel.read.metadata.holder.csv.CsvReadWorkbookHolder;
 import com.alibaba.excel.util.SheetUtils;
 import com.alibaba.excel.util.StringUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * read executor
@@ -103,7 +102,9 @@ public class CsvExcelReadExecutor implements ExcelReadExecutor {
             return csvFormat.parse(
                 new InputStreamReader(inputStream, csvReadContext.csvReadWorkbookHolder().getCharset()));
         }
-        return csvFormat.parse(new InputStreamReader(new BOMInputStream(inputStream, byteOrderMark.getByteOrderMark()),
+        return csvFormat.parse(new InputStreamReader(BOMInputStream.builder()
+                .setInputStream(inputStream)
+                .setByteOrderMarks(byteOrderMark.getByteOrderMark()).get(),
             csvReadContext.csvReadWorkbookHolder().getCharset()));
     }
 
